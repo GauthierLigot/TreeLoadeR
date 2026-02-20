@@ -4,17 +4,17 @@
 \alias{get_db}
 \title{Import All Tables from the Database (optionally save to disk)}
 \usage{
-get_db(save = T, dir = "1_DB/exported_DB/", con = NA)
+get_db(con = NA, save = F, dir)
 }
 \arguments{
+\item{con}{A live \code{DBIConnection}. If missing, a connection is created with
+\code{get_dendropulse()}.}
+
 \item{save}{Logical; if \code{TRUE}, the imported database (a list) is saved
 to an \code{.RData} file on disk. Default: \code{FALSE}.}
 
 \item{dir}{Character path to an \strong{existing, writable directory} where
 the \code{.RData} file will be saved (required only if \code{save = TRUE}).}
-
-\item{con}{A live \code{DBIConnection}. If missing, a connection is created with
-\code{get_dendropulse()}.}
 }
 \value{
 A named list where each element is a data.frame or \code{sf} object

@@ -36,18 +36,18 @@
 #'
 #' @seealso [get_tablelist()], [get_table()], [get_dendropulse()]
 #' @export
-get_db<-function(save = T, dir = "1_DB/exported_DB/", con=NA){
+get_db<-function(con=NA, save = F, dir){
 
   if(missing(con)){
-    con<-getDendroPulseDB()  #get default connection
+    con<-get_dendropulse()  #get default connection
   }
 
-  tableList <- getTableList(con)
+  tableList <- get_tablelist(con)
   importedDB <- list()
 
   for(t in tableList){
     print(paste("Importing table :",t))
-    importedDB[[t]]<-getTable(con, t)
+    importedDB[[t]]<-get_table(con, t)
   }
 
   if(save){

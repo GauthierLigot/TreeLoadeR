@@ -34,7 +34,7 @@
 #' @export
 get_table<-function(con, tablename = "tree"){
 
-  tableList<-getTableList(con)
+  tableList<-get_tablelist(con)
 
   if(!tablename %in% tableList){
     print(paste("There is no table with that name :",tablename,"- see getTableList()"))

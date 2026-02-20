@@ -16,3 +16,11 @@ Imports:
     RPostgres,
     sf,
     stringr
+Suggests: 
+    knitr,
+    rmarkdown,
+    ggplot2,
+    dplyr,
+    tidyr,
+    lubridate
+VignetteBuilder: knitr

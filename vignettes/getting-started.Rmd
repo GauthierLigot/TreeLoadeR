@@ -1,0 +1,136 @@
+---
+title: "Getting Started with TreeLoadeR"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Getting Started with TreeLoadeR}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment  = "#>",
+  fig.width  = 7,
+  fig.height = 4
+)
+```
+
+# Introduction
+
+This vignette demonstrates how to:
+
+1. Connect to the DendroPulse database using `get_dendropulse()`
+2. Import all tables locally using `get_db()`
+3. Save a snapshot of the database to disk
+4. Reload an existing database snapshot using `get_saveddb()`
+5. Combine several tables into a single flat dataset
+6. Build a daily summary and visualize tree growth patterns
+
+> **Important:**  
+> For CRAN and R CMD check compatibility, all database interactions are  
+> `eval = FALSE`. To run the workflow, execute the code interactively.
+
+
+# Load required packages
+
+```{r libraries, message=FALSE}
+library(TreeLoadeR)
+library(tidyverse)
+library(lubridate)  # for date() helper
+```
+
+
+# Connect to the Database
+
+Use the package's default connection helper:
+
+```{r connect, eval=FALSE}
+con <- get_dendropulse()
+```
+
+
+# Import the Database
+
+## Import without saving
+
+```{r import-simple, eval=FALSE}
+db <- get_db()
+```
+
+## Import and save to disk
+
+The directory must already exist and be writable.
+
+```{r import-save, eval=FALSE}
+db <- get_db(con, save = TRUE, dir = "c:/temp/exported_db/")
+```
+
+
+# Load the Most Recent Saved Snapshot
+
+```{r load-snapshot, eval=FALSE}
+db <- get_saveddb(dir = "c:/temp/exported_db/")
+```
+
+
+# Combine Tables into a Flat Dataset
+
+This example links `record`, `reading`, `dendrometer`, `tree`, `site`, and `species`
+to create a unified dataset.
+
+```{r join-tables, eval=FALSE}
+dat <- db$record %>%
+  left_join(db$reading,     by = dplyr::join_by(id_reading),    suffix = c("", "reading")) %>%
+  left_join(db$dendrometer, by = dplyr::join_by(id_dendrometer), suffix = c("", "dendro")) %>%
+  left_join(db$tree,        by = dplyr::join_by(id_tree),        suffix = c("", "tree")) %>%
+  left_join(db$site,        by = dplyr::join_by(id_site),        suffix = c("", "site")) %>%
+  left_join(db$species,     by = dplyr::join_by(id_species),     suffix = c("", "species"))
+```
+
+
+# Compute Daily Summary
+
+We convert the timestamp into a calendar date, regroup, and take the 
+first `span` measurement for each tree each day.
+
+```{r daily-summary, eval=FALSE}
+daily.dat <- dat %>%
+  mutate(date = date(datetime_utc)) %>%
+  group_by(id_site, locality, vernacular_name_fr,
+           id_tree, id_dendrometer, date) %>%
+  arrange(datetime_utc) %>%
+  summarise(span = first(span), .groups = "drop")
+```
+
+
+# Visualize Daily Growth
+
+```{r plot, eval=FALSE}
+ggplot(daily.dat,
+       aes(y = span, x = date,
+           col = vernacular_name_fr, group = id_tree)) +
+  geom_line() +
+  facet_wrap(~ locality) +
+  labs(
+    title = "Daily Tree Growth by Locality and Species",
+    x = "Date",
+    y = "Span"
+  ) +
+  theme_minimal()
+```
+
+
+# Notes
+
+- Use `save = TRUE` in `get_db()` to archive local snapshots.
+- `get_saveddb()` always loads the **most recent** `.RData` snapshot.
+- For reproducibility, maintain consistent `dir` paths for exported DB files.
+- For CRAN safety, database‑dependent code must have `eval=FALSE` in vignettes.
+
+
+# Session Information
+
+```{r session-info}
+sessionInfo()
+```
