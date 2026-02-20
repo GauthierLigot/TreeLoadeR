@@ -36,14 +36,7 @@
 #'
 #' @seealso [get_tablelist()], [get_table()], [get_dendropulse()]
 #' @export
-#' Import the database in a R object
-#'
-#' @param save if TRUE, save the R object as a Rdata
-#' @return A list with all the tables included in the database (those returned by getTableList())
-#' @export
-#' @examples
-#' db<-importDB()
-importDB<-function(save = T, dir = "1_DB/exported_DB/", con=NA){
+get_db<-function(save = T, dir = "1_DB/exported_DB/", con=NA){
 
   if(missing(con)){
     con<-getDendroPulseDB()  #get default connection
@@ -66,7 +59,7 @@ importDB<-function(save = T, dir = "1_DB/exported_DB/", con=NA){
 
 
     if (!dir.exists(dir)) {
-      warning("`dir` does not exist: ", dir, " — the database will not be saved.")
+      warning("`dir` does not exist: ", dir, " : the database will not be saved.")
       return(importedDB)
     }
 

@@ -1,4 +1,3 @@
-
 #' Connect to the DendroPulse PostgreSQL Database
 #'
 #' This function creates a connection to the *dendro_pulse* PostgreSQL database.
@@ -27,7 +26,6 @@
 #' }
 #'
 #' @export
-
 get_dendropulse<-function(admin=F){
   dsn_database = "dendro_pulse"     # Specify the name of your Database
   dsn_hostname = "gxgfscotty.gxabt.priv"

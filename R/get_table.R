@@ -32,7 +32,6 @@
 #' @importFrom DBI dbGetQuery
 #' @importFrom sf st_read
 #' @export
-
 get_table<-function(con, tablename = "tree"){
 
   tableList<-getTableList(con)
